@@ -1,0 +1,43 @@
+
+proxy1 ansible_ssh_host=10.0.0.1 ansible_ssh_user=root ansible_ssh_pass=password
+proxy2 ansible_ssh_host=10.0.0.2 ansible_ssh_user=root ansible_ssh_pass=password
+
+object1 ansible_ssh_host=10.0.0.3 ansible_ssh_user=root ansible_ssh_pass=password
+object2 ansible_ssh_host=10.0.0.4 ansible_ssh_user=root ansible_ssh_pass=password
+object3 ansible_ssh_host=10.0.0.5 ansible_ssh_user=root ansible_ssh_pass=password
+object4 ansible_ssh_host=10.0.0.6 ansible_ssh_user=root ansible_ssh_pass=password
+
+md1 ansible_ssh_host=10.0.0.7 ansible_ssh_user=root ansible_ssh_pass=password
+md2 ansible_ssh_host=10.0.0.8 ansible_ssh_user=root ansible_ssh_pass=password
+
+client1 ansible_ssh_host=10.0.0.9 ansible_ssh_user=root ansible_ssh_pass=password
+client2 ansible_ssh_host=10.0.0.10 ansible_ssh_user=root ansible_ssh_pass=password
+
+[keystone]
+proxy1
+
+[swift-proxy]
+proxy1
+proxy2
+
+[swift-md]
+md1
+md2
+
+[swift-object]
+object1
+object2
+object3
+object4
+
+[swift-storage:children]
+swift-object
+swift-md
+
+[swift-ring-builder]
+proxy1
+
+[swift-client]
+client1
+client2
+

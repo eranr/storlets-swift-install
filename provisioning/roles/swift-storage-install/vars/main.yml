@@ -1,0 +1,113 @@
+#---------------------------------------------------------------------------
+# Copyright IBM Corp. 2015, 2015 All Rights Reserved
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# Limitations under the License.
+#---------------------------------------------------------------------------
+# Written By George Goldberg (georgeg@il.ibm.com)
+---
+common_os_packages:
+  Debian:
+    packages:
+      - python-xattr
+      - rsync
+      - swift
+      - swift-account
+      - swift-container
+      - swift-object
+      - python-keystoneclient
+      - python-swiftclient
+    git:
+      - rsync
+      - sqlite3
+      - python-xattr
+  RedHat:
+    packages:
+      - openstack-swift-account
+      - openstack-swift-container
+      - openstack-swift-object
+      - xinetd
+    git:
+      - rsync
+      - sqlite
+      - pyxattr
+      - xinetd
+
+os_packages:
+  Debian:
+    havanna: []
+    juno: []
+    kilo: []
+    liberty: []
+    mitaka: []
+  RedHat: 
+    havanna: []
+    juno: []
+    kilo: []
+    liberty: []
+    mitaka: []
+
+packages: "{{ common_os_packages[ansible_os_family][installation_source] + os_packages[ansible_os_family][openstack_version] }}"
+
+os_services:
+  RedHat:
+    packages:
+      - openstack-swift-object
+      - openstack-swift-object-replicator 
+      - openstack-swift-object-updater 
+      - openstack-swift-object-auditor
+      - openstack-swift-container
+      - openstack-swift-container-replicator 
+      - openstack-swift-container-updater 
+      - openstack-swift-container-auditor
+      - openstack-swift-account
+      - openstack-swift-account-replicator
+      - openstack-swift-account-reaper
+      - openstack-swift-account-auditor
+    git: []  
+  Debian:
+    packages:  
+      - swift-account
+      - swift-account-auditor
+      - swift-account-reaper
+      - swift-account-replicator
+      - swift-container
+      - swift-container-auditor
+      - swift-container-replicator
+      - swift-container-updater
+      - swift-object
+      - swift-object-auditor
+      - swift-object-replicator
+      - swift-object-updater
+    git: []
+services: "{{ os_services[ansible_os_family][installation_source] }}"
+
+config_files:
+  container-server.conf:
+    havanna: etc/swift/havanna/container-server.conf
+    juno: etc/swift/juno/container-server.conf
+    kilo: etc/swift/juno/container-server.conf
+    mitaka: etc/swift/mitaka/container-server.conf
+  account-server.conf:
+    havanna: etc/swift/havanna/account-server.conf
+    juno: etc/swift/juno/account-server.conf
+    kilo: etc/swift/juno/account-server.conf
+    mitaka: etc/swift/mitaka/account-server.conf
+  object-server.conf:
+    havanna: etc/swift/havanna/object-server.conf
+    juno: etc/swift/juno/object-server.conf
+    kilo: etc/swift/juno/object-server.conf
+    mitaka: etc/swift/mitaka/object-server.conf
+  swift.conf:
+    havanna: etc/swift/havanna/swift.conf
+    juno: etc/swift/juno/swift.conf
+    kilo: etc/swift/juno/swift.conf
+    mitaka: etc/swift/mitaka/swift.conf

@@ -1,0 +1,80 @@
+#---------------------------------------------------------------------------
+# Copyright IBM Corp. 2015, 2015 All Rights Reserved
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# Limitations under the License.
+#---------------------------------------------------------------------------
+# Written By George Goldberg (georgeg@il.ibm.com)
+---
+- include: Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include: RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: create directories if not already there
+  file:
+    path: "{{ item }}"
+    owner: "swift"
+    group: "swift"
+    mode: 0750
+    state: directory
+  with_items:
+    - /etc/swift
+    - /var/lib/swift
+    - /var/lib/swift/keystone-signing
+
+- name: update configuration swift files from non git templates
+  template: 
+    src: "{{ item.value[openstack_version] }}"
+    dest: /etc/swift/{{ item.key }}
+    owner: "swift"
+    group: "swift"
+    mode: 0750
+  with_dict: "{{ config_files }}"
+  tags:
+    - config_files
+  when: installation_source != 'git'
+
+- name: update configuration swift files from git
+  copy:
+    src: "{{ swift_git_dir }}/etc/{{ item }}.conf-sample"
+    dest: "/etc/swift/{{ item }}.conf"
+    owner: "swift"
+    group: "swift"
+    mode: 0750
+    remote_src: True
+  tags:
+    - config_files
+  with_items:
+    - proxy-server
+    - swift
+  when: installation_source == 'git'
+
+- name: patch proxy-server.conf
+  replace: dest=/etc/swift/proxy-server.conf regexp='^.*bind_port.*$' replace='bind_port = {{ proxy_port }}' backup=yes
+- replace: dest=/etc/swift/proxy-server.conf regexp='^pipeline(\s+.*)tempauth(\s+.*)$' replace='# pipeline\1tempauth\2' backup=yes
+- replace: dest=/etc/swift/proxy-server.conf regexp='^#.*pipeline(\s+.*)authtoken(\s+.*)$' replace='pipeline\1authtoken\2' backup=yes
+- replace: dest=/etc/swift/proxy-server.conf regexp='^#.*\[filter:authtoken\].*$' replace='[filter:authtoken]' backup=yes
+- replace: dest=/etc/swift/proxy-server.conf regexp='^#.*paste.filter_factory = keystonemiddleware.auth_token:filter_factory.*$' replace='paste.filter_factory = keystonemiddleware.auth_token:filter_factory' backup=yes
+- replace: dest=/etc/swift/proxy-server.conf regexp='^#.*\[filter:keystoneauth\].*$' replace='[filter:keystoneauth]' backup=yes
+- replace: dest=/etc/swift/proxy-server.conf regexp='^#.*use.*=.*egg:swift#keystoneauth.*$' replace='use = egg:swift#keystoneauth' backup=yes
+- replace: dest=/etc/swift/proxy-server.conf regexp='^#.*delay_auth_decision.*$' replace='delay_auth_decision = True' backup=yes
+- replace: dest=/etc/swift/proxy-server.conf regexp='^.*account_autocreate.*$' replace='account_autocreate = true' backup=yes
+- lineinfile: dest=/etc/swift/proxy-server.conf insertafter='paste.filter_factory = keystonemiddleware.*$' line='auth_host={{ keystone_endpoint_host }}\nauth_port={{ keystone_endpoint_port }}\nauth_protocol={{ keystone_auth_protocol }}\nadmin_user={{ keystone_admin_user }}\nadmin_tenant_name={{ keystone_admin_project }}\nadmin_password={{ keystone_admin_password }}' state=present
+
+
+- name: enable services 
+  service: 
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  with_items: "{{ services }}"
