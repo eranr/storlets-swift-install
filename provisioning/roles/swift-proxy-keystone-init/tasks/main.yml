@@ -13,25 +13,33 @@
 # Limitations under the License.
 #---------------------------------------------------------------------------
 # Written By George Goldberg (georgeg@il.ibm.com)
-- name: create swift service user
+
+- name: Create default project for Swift
   keystone_user: 
     endpoint: "{{ keystone_admin_url }}"
     token: "{{ keystone_admin_token }}" 
-    tenant: "{{ swift_project }}" 
-    user: "{{ swift_admin_user }}"
-    password: "{{ swift_admin_password }}"
+    tenant: "{{ swift_default_tenant }}"
+    tenant_description: "Admin Tenant"
+
+- name: Add user to the default project
+  keystone_user: 
+    endpoint: "{{ keystone_admin_url }}"
+    token: "{{ keystone_admin_token }}" 
+    tenant: "{{ swift_default_tenant }}" 
+    user: "{{ swift_default_user_name }}"
+    password: "{{ swift_default_user_password }}"
   run_once: true
 
-- name: add swift service user to the service tenant with the admin role
+- name: Add the admin role to the user
   keystone_user: 
     endpoint: "{{ keystone_admin_url }}"
     token: "{{ keystone_admin_token }}"
-    tenant: "{{ swift_project  }}"
-    user: "{{ swift_admin_user  }}"
+    tenant: "{{ swift_default_tenant }}"
+    user: "{{ swift_default_user_name }}"
     role: admin
   run_once: true   
 
-- name: add swift endpoints to keystone
+- name: Add swift endpoints to keystone
   keystone_service: 
     endpoint: "{{ keystone_admin_url }}"
     token: "{{ keystone_admin_token }}" 

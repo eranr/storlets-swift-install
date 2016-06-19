@@ -72,12 +72,6 @@
     tenant: "{{ keystone_admin_project }}"
     tenant_description: "Service Tenant"
 
-#- name: create admin tenant
-#  keystone_user: 
-#    endpoint: "{{ keystone_admin_url }}"
-#    token: "{{ keystone_admin_token }}" 
-#    tenant: "{{ keystone_initial_project }}"
-#    tenant_description: "Admin Tenant"
 
 - name: create admin user
   keystone_user: 

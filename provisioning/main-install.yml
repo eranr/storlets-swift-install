@@ -18,7 +18,7 @@
 - include: keystone.yml
 - include: swift-install-git.yml
 - include: swift-proxy-install.yml
-- include: swift-proxy-configure.yml
+- include: swift-keystone-configure.yml
 - include: swift-storage-install.yml
 - include: swift-storage-configure.yml
 - include: swift-create-and-distribute-rings.yml
