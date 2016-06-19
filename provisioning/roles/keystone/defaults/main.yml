@@ -16,7 +16,7 @@
 ---
 debian_packages: 
   - python-pyasn1
-  - python-idna
+#  - python-idna
   - keystone
 
 debian_services:
