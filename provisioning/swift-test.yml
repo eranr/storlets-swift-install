@@ -18,6 +18,6 @@
   hosts: swift-proxy
   tasks:
     - name: stat
-      command: swift --os-auth-url "{{ keystone_public_url  }}"  --os-tenant-name "{{ swift_project }}" --os-username "{{ swift_admin_user }}" --os-password "{{ swift_admin_password }}" stat 
+      command: swift --os-auth-url "{{ keystone_public_url  }}"  --os-tenant-name "{{ swift_default_tenant }}" --os-username "{{ swift_default_user_name }}" --os-password "{{ swift_default_user_password }}" stat 
       register: command_result
       failed_when: "'FAILED!' in command_result.stdout"
