@@ -50,6 +50,7 @@
 - name: wait for keystone to come back up
   wait_for: 
     port: "{{keystone_endpoint_port}}"
+    host: "{{ansible_host}}"
 
 - name: add keystone service
   keystone_service: 
