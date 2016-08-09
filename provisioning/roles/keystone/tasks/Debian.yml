@@ -43,14 +43,13 @@
 - name: ensure services are started
   service: 
     name: "{{ item }}"
-    state: started 
+    state: restarted 
   with_items: "{{ debian_services }}"
 
 # keystone seems to take a while...
 - name: wait for keystone to come back up
   wait_for: 
     port: "{{keystone_endpoint_port}}"
-    host: "{{ansible_host}}"
 
 - name: add keystone service
   keystone_service: 
