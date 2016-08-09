@@ -41,9 +41,7 @@
   command: /usr/bin/keystone-manage db_sync
 
 - name: ensure services are started
-  service: 
-    name: "{{ item }}"
-    state: restarted 
+  shell: service "{{ item }}" start
   with_items: "{{ debian_services }}"
 
 # keystone seems to take a while...
