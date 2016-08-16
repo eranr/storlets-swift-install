@@ -16,10 +16,11 @@
 ---
 - name: install git
   apt: name=git update_cache=yes
+    force: yes
 
 - name: install python software properties
   apt: name=python-software-properties update_cache=yes
-       force=yes
+    force: yes
   when: debian[openstack_version].install
 
 - name: add openstack apt repositories file to /etc/apt/sources.list.d
@@ -33,6 +34,7 @@
 
 - name: install  ubuntu-cloud-keyring
   apt: name=ubuntu-cloud-keyring state=present
+    force: yes
   when: debian[openstack_version].install
 
 - name: apt-get update
