@@ -19,6 +19,7 @@
 
 - name: install python software properties
   apt: name=python-software-properties update_cache=yes
+       force=yes
   when: debian[openstack_version].install
 
 - name: add openstack apt repositories file to /etc/apt/sources.list.d
