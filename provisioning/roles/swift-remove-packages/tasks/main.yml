@@ -15,7 +15,7 @@
 # Written By George Goldberg (georgeg@il.ibm.com)
 ---
 - name: remove all Debian packages with swift regexp
-  shell: apt-get -y remove '.*swift.*' 
+  shell: apt-get -y --force-yes remove '.*swift.*' 
   ignore_errors: yes 
   when: ansible_os_family == 'Debian'
 
